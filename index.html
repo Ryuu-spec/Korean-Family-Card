@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Family Card</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+        :root {
+            --korean-blue: #0047a0;
+            --korean-red: #cd2e3a;
+            --bg-gray: #f0f2f5;
+            --card-white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-gray);
+            font-family: 'Nanum Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-white);
+            border-radius: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: var(--korean-blue);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .app-header p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .lang-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .lang-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .lang-btn.active {
+            background: var(--korean-blue);
+            color: white;
+            border-color: var(--korean-blue);
+        }
+
+        /* 카드 영역 */
+        .card-perspective {
+            perspective: 1000px;
+            flex: 1;
+            padding: 50px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-content {
+            width: 100%;
+            max-width: 320px;
+            height: 250px;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .word-ko {
+            font-size: 64px;
+            font-weight: 800;
+            color: #212529;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+        }
+
+        .word-tr {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--korean-blue);
+            background: #eef2ff;
+            padding: 8px 20px;
+            border-radius: 30px;
+        }
+
+        /* 하단 컨트롤 영역 */
+        .control-area {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-draw {
+            padding: 20px;
+            background: var(--korean-red);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #9d222b;
+            transition: 0.1s;
+        }
+
+        .btn-draw:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #9d222b;
+        }
+
+        .btn-tts {
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .status-footer {
+            padding: 15px;
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            background: #fafafa;
+        }
+
+        /* 회전 애니메이션 */
+        .spinning {
+            animation: cardFlip 0.6s ease-in-out;
+        }
+
+        @keyframes cardFlip {
+            0% { transform: rotateY(0deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.1); }
+            100% { transform: rotateY(360deg) scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="app-header">
+        <h1>Korean Family Card</h1>
+        <p>Learning Korean for Multicultural Families</p>
+    </div>
+
+    <div class="lang-selector">
+        <button class="lang-btn active" onclick="setLang('en')">English</button>
+        <button class="lang-btn" onclick="setLang('vi')">Tiếng Việt</button>
+        <button class="lang-btn" onclick="setLang('zh')">中国语</button>
+        <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+    </div>
+
+    <div class="card-perspective">
+        <div class="card-content" id="card_face">
+            <div id="display_ko" class="word-ko">가족</div>
+            <div id="display_tr" class="word-tr">Family</div>
+        </div>
+    </div>
+
+    <div class="control-area">
+        <button class="btn-draw" onclick="drawCard()">Shuffle Card</button>
+        <button class="btn-tts" onclick="speak()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            Listen to Pronunciation
+        </button>
+    </div>
+
+    <div class="status-footer">
+        Step by Step Korean Learning Project
+    </div>
+</div>
+
+<script>
+    const dataSet = [
+        { ko: "할아버지", en: "Grandfather", vi: "Ông", zh: "爷爷", ja: "おじいさん" },
+        { ko: "할머니", en: "Grandmother", vi: "Bà", zh: "奶奶", ja: "おばあさん" },
+        { ko: "아버지", en: "Father", vi: "Bố", zh: "爸爸", ja: "お父さん" },
+        { ko: "어머니", en: "Mother", vi: "Mẹ", zh: "妈妈", ja: "お母さん" },
+        { ko: "형", en: "Older Brother", vi: "Anh", zh: "哥哥", ja: "お兄さん" },
+        { ko: "누나", en: "Older Sister", vi: "Chị", zh: "姐姐", ja: "お姉상" },
+        { ko: "남동생", en: "Younger Brother", vi: "Em trai", zh: "弟弟", ja: "弟" },
+        { ko: "여동생", en: "Younger Sister", vi: "Em gái", zh: "妹妹", ja: "妹" }
+    ];
+
+    let currentLang = 'en';
+    let currentIndex = -1;
+    let isDrawing = false;
+
+    function setLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.toLowerCase().includes(lang) || 
+               (lang==='zh' && btn.innerText==='中国语') || 
+               (lang==='ja' && btn.innerText==='日本語')) {
+                btn.classList.add('active');
+            }
+        });
+        updateDisplay();
+    }
+
+    function drawCard() {
+        if (isDrawing) return;
+        isDrawing = true;
+
+        const face = document.getElementById('card_face');
+        face.classList.remove('spinning');
+        void face.offsetWidth; 
+        face.classList.add('spinning');
+        
+        setTimeout(() => {
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * dataSet.length);
+            } while (nextIndex === currentIndex); 
+            
+            currentIndex = nextIndex;
+            updateDisplay();
+        }, 300);
+
+        setTimeout(() => {
+            isDrawing = false;
+        }, 600);
+    }
+
+    function updateDisplay() {
+        const item = dataSet[currentIndex] || { ko: "가족", en: "Family", vi: "Gia đình", zh: "家族", ja: "家族" };
+        document.getElementById('display_ko').innerText = item.ko;
+        document.getElementById('display_tr').innerText = item[currentLang];
+    }
+
+    function speak() {
+        const text = document.getElementById('display_ko').innerText;
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'ko-KR';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    }
+
+    window.onload = () => { updateDisplay(); };
+</script>
+
+</body>
+</html>
